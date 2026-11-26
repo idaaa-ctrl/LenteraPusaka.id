@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LenteraPustaka — Toko E-Book Berkualitas & Baca Instan</title>
+
+  <!-- Memuat Tailwind CSS untuk tata letak responsif dan utilitas modern -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Memuat Google Fonts: Newsreader (editorial serif) & Plus Jakarta Sans (UI bersih) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <script>
+    // Konfigurasi tema editorial hangat untuk Tailwind CSS
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            kertas: '#FAF7F2',
+            kertasGelap: '#F2ECE1',
+            tinta: '#1E2421',
+            tintaLembut: '#5A635E',
+            terakota: '#C85A32',
+            terakotaGelap: '#A64522',
+            pinus: '#234E3D',
+            pinusTerang: '#E6EFEA',
+            emas: '#D49B35',
+            garis: '#E5DDD0',
+          },
+          boxShadow: {
+            editorial: '0 14px 34px -12px rgba(30, 36, 33, 0.08)',
+            angkat: '0 22px 44px -14px rgba(30, 36, 33, 0.14)',
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Transisi halus untuk drawer, modal, dan akordeon FAQ */
+    .panel-transition {
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+    }
+    .buku-card:hover .sampul-buku {
+      transform: translateY(-4px) scale(1.015);
+    }
+    .sampul-buku {
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    /* Custom scrollbar halus */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FAF7F2;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D8CFC0;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #BEB29E;
+    }
+  </style>
+</head>
+<body class="bg-kertas text-tinta font-sans antialiased selection:bg-terakota/20 selection:text-terakotaGelap">
+
+  <!-- ==================== NAVBAR / HEADER ==================== -->
+  <header class="sticky top-0 z-40 bg-kertas/95 backdrop-blur-md border-b border-garis">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
+      <!-- Logo & Brand Name -->
+      <a href="#" class="flex items-center gap-3 group focus:outline-none">
+        <div class="w-10 h-10 rounded-xl bg-pinus text-kertas flex items-center justify-center shadow-sm group-hover:bg-terakota transition-colors">
+          <!-- Ikon SVG Lentera & Buku -->
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+            <circle cx="12.5" cy="9.5" r="2.5" />
+            <path d="M12.5 5v2" />
+            <path d="M12.5 12v1.5" />
+          </svg>
+        </div>
+        <div>
+          <span class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-tinta block leading-none">
+            LenteraPustaka
+          </span>
+          <span class="text-[11px] font-medium tracking-wider uppercase text-tintaLembut hidden sm:block mt-0.5">
+            Penerbitan & E-Book Pilihan
+          </span>
+        </div>
+      </a>
+
+      <!-- Navigasi Tengah (Desktop) -->
+      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-tintaLembut" aria-label="Navigasi Utama">
+        <a href="#katalog" class="hover:text-terakota transition-colors py-2">Katalog</a>
+        <a href="#bundling" class="hover:text-terakota transition-colors py-2">Paket Bundling</a>
+        <a href="#testimoni" class="hover:text-terakota transition-colors py-2">Testimoni</a>
+        <a href="#faq" class="hover:text-terakota transition-colors py-2">FAQ</a>
+      </nav>
+
+      <!-- Tombol Keranjang & Aksi Cepat -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button
+          type="button"
+          id="btn-buka-keranjang"
+          onclick="bukaKeranjang()"
+          class="relative inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-tinta text-kertas hover:bg-terakota transition-colors text-sm font-semibold shadow-sm cursor-pointer"
+          aria-label="Buka keranjang belanja"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="8" cy="21" r="1" />
+            <circle cx="19" cy="21" r="1" />
+            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+          </svg>
+          <span>Keranjang</span>
+          <span
+            id="badge-jumlah-keranjang"
+            class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-emas text-tinta text-xs font-bold"
+          >
+            0
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== HERO SECTION ==================== -->
+  <section class="relative overflow-hidden border-b border-garis bg-gradient-to-b from-kertas via-kertas to-kertasGelap/60">
+    <!-- Dekorasi Latar Halus -->
+    <div class="pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full bg-terakota/10 blur-3xl"></div>
+    <div class="pointer-events-none absolute bottom-0 -left-20 w-80 h-80 rounded-full bg-pinus/10 blur-3xl"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+        <!-- Kolom Kiri: Judul, Nilai Tambah, CTA, Statistik -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pinusTerang text-pinus text-xs sm:text-sm font-semibold border border-pinus/15">
+            <span class="w-2 h-2 rounded-full bg-pinus animate-pulse"></span>
+            Kurasi Penulis & Praktisi Indonesia • Akses Seumur Hidup
+          </div>
+
+          <h1 class="font-serif text-4xl sm:text-5xl lg:text-[3.4rem] font-bold tracking-tight text-tinta leading-[1.12]">
+            Baca pengetahuan terbaik, <span class="text-terakota italic font-normal">tumbuh lebih cepat</span> tanpa batas waktu.
+          </h1>
+
+          <p class="text-base sm:text-lg text-tintaLembut leading-relaxed max-w-2xl">
+            <strong>LenteraPustaka</strong> menghadirkan e-book pilihan yang disusun praktis, rapi, dan mudah dicerna untuk profesional, pelaku usaha, pelajar, dan pembelajar mandiri. Unduh sekali dan baca kapan saja di perangkat favorit Anda.
+          </p>
+
+          <!-- Nilai Tambah Utama -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
+            <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-white/80 border border-garis shadow-xs">
+              <div class="w-9 h-9 rounded-xl bg-terakota/10 text-terakota flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-sm font-bold text-tinta">Baca Instan</h2>
+                <p class="text-xs text-tintaLembut mt-0.5">Langsung siap diakses setelah konfirmasi pesanan.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-white/80 border border-garis shadow-xs">
+              <div class="w-9 h-9 rounded-xl bg-pinus/10 text-pinus flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-sm font-bold text-tinta">Format PDF & EPUB</h2>
+                <p class="text-xs text-tintaLembut mt-0.5">Nyaman di tablet, e-reader, laptop, maupun ponsel.</p>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-white/80 border border-garis shadow-xs">
+              <div class="w-9 h-9 rounded-xl bg-emas/15 text-tinta flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-sm font-bold text-tinta">Kurasi Berkualitas</h2>
+                <p class="text-xs text-tintaLembut mt-0.5">Disunting ketat dengan studi kasus relevan.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tombol CTA -->
+          <div class="flex flex-wrap items-center gap-3.5 pt-2">
+            <a
+              href="#katalog"
+              class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-terakota hover:bg-terakotaGelap text-white font-semibold text-sm sm:text-base shadow-editorial transition-all"
+            >
+              <span>Jelajahi Katalog E-Book</span>
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </a>
+
+            <a
+              href="#bundling"
+              class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white hover:bg-kertasGelap text-tinta border border-garis font-semibold text-sm sm:text-base transition-colors"
+            >
+              <span>Lihat Paket Bundling</span>
+            </a>
+          </div>
+
+          <!-- Statistik Singkat -->
+          <div class="grid grid-cols-3 gap-4 pt-4 border-t border-garis max-w-xl">
+            <div>
+              <p class="font-serif text-2xl sm:text-3xl font-bold text-tinta">12.400+</p>
+              <p class="text-xs sm:text-sm text-tintaLembut">Pembaca Aktif</p>
+            </div>
+            <div>
+              <p class="font-serif text-2xl sm:text-3xl font-bold text-tinta">48+ Judul</p>
+              <p class="text-xs sm:text-sm text-tintaLembut">E-Book Terkurasi</p>
+            </div>
+            <div>
+              <p class="font-serif text-2xl sm:text-3xl font-bold text-tinta">4,9 / 5,0</p>
+              <p class="text-xs sm:text-sm text-tintaLembut">Rating Rata-Rata</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kolom Kanan: Kartu Showcase Editorial Interaktif -->
+        <div class="lg:col-span-5">
+          <div class="relative bg-white rounded-3xl p-6 sm:p-7 border border-garis shadow-angkat">
+            <div class="flex items-center justify-between text-xs font-semibold text-tintaLembut mb-4">
+              <span class="px-3 py-1 rounded-full bg-terakota/10 text-terakota">Pilihan Editor Minggu Ini</span>
+              <span>PDF • EPUB</span>
+            </div>
+
+            <!-- Sampul Mini Unggulan -->
+            <div class="rounded-2xl bg-gradient-to-br from-pinus via-[#1B3C2F] to-[#12271F] text-kertas p-6 mb-5 relative overflow-hidden">
+              <div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-emas/20"></div>
+              <p class="text-xs uppercase tracking-widest text-emas font-semibold mb-2">Teknologi & Web</p>
+              <h3 class="font-serif text-2xl sm:text-3xl font-bold leading-snug mb-2">
+                Arsitektur Web Modern yang Cepat & Tahan Banting
+              </h3>
+              <p class="text-xs sm:text-sm text-kertas/80 leading-relaxed">
+                Panduan praktis menyusun antarmuka responsif, performa optimal, dan alur kerja bersih dari konsep hingga produksi.
+              </p>
+            </div>
+
+            <div class="flex items-center justify-between gap-4 pt-1">
+              <div>
+                <p class="text-xs text-tintaLembut">Harga E-Book</p>
+                <p class="text-xl font-bold text-tinta">Rp 89.000</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  onclick="bukaSinopsis('arsitektur-web-modern')"
+                  class="px-3.5 py-2.5 rounded-xl border border-garis hover:bg-kertas text-xs sm:text-sm font-semibold text-tinta transition-colors cursor-pointer"
+                >
+                  Sinopsis
+                </button>
+                <button
+                  type="button"
+                  onclick="tambahKeKeranjang('arsitektur-web-modern')"
+                  class="px-4 py-2.5 rounded-xl bg-pinus hover:bg-pinus/90 text-white text-xs sm:text-sm font-semibold transition-colors cursor-pointer"
+                >
+                  + Keranjang
+                </button>
+              </div>
+            </div>
+
+            <!-- Banner Promo Kecil di Bawah Showcase -->
+            <div class="mt-5 p-3.5 rounded-2xl bg-kertasGelap border border-garis flex items-center justify-between gap-3">
+              <div class="text-xs text-tinta">
+                Gunakan kode <span class="font-bold text-terakota bg-white px-2 py-0.5 rounded border border-garis">HEMAT20</span> untuk potongan 20% saat checkout.
+              </div>
+              <button
+                type="button"
+                onclick="salinKodePromo()"
+                id="btn-salin-promo"
+                class="text-xs font-semibold text-pinus hover:text-terakota shrink-0 underline cursor-pointer"
+              >
+                Salin kode
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== KATALOG E-BOOK INTERAKTIF ==================== -->
+  <section id="katalog" class="py-14 sm:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header Bagian Katalog -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-widest text-terakota mb-1.5">Rak Digital Terkurasi</p>
+          <h2 class="font-serif text-3xl sm:text-4xl font-bold text-tinta">Katalog E-Book Pilihan</h2>
+        </div>
+        <p class="text-sm text-tintaLembut max-w-md">
+          Cari berdasarkan judul, topik, atau penulis. Klik <strong>Lihat Sinopsis</strong> untuk membaca ringkasan bab sebelum membeli.
+        </p>
+      </div>
+
+      <!-- Bar Pencarian, Filter Kategori, dan Urutan -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-garis shadow-xs mb-8 space-y-4">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+          <!-- Input Pencarian Real-Time -->
+          <div class="lg:col-span-6 relative">
+            <svg
+              class="w-4 h-4 text-tintaLembut absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="search"
+              id="input-pencarian"
+              oninput="renderKatalog()"
+              placeholder="Cari judul e-book, penulis, atau topik (misal: keuangan, UI, kebiasaan)..."
+              class="w-full pl-11 pr-4 py-2.5 rounded-xl bg-kertas border border-garis focus:border-terakota focus:bg-white focus:outline-none text-sm text-tinta placeholder:text-tintaLembut/70 transition-colors"
+              aria-label="Cari e-book"
+            />
+          </div>
+
+          <!-- Dropdown Pengurutan -->
+          <div class="lg:col-span-3">
+            <label for="select-urutan" class="sr-only">Urutkan e-book</label>
+            <select
+              id="select-urutan"
+              onchange="renderKatalog()"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-kertas border border-garis focus:border-terakota focus:bg-white focus:outline-none text-sm font-medium text-tinta cursor-pointer"
+            >
+              <option value="terpopuler">Urutkan: Terpopuler</option>
+              <option value="harga-terendah">Harga: Terendah ke Tertinggi</option>
+              <option value="harga-tertinggi">Harga: Tertinggi ke Terendah</option>
+            </select>
+          </div>
+
+          <!-- Informasi Jumlah Hasil & Reset -->
+          <div class="lg:col-span-3 flex items-center justify-between lg:justify-end gap-3 text-sm">
+            <span id="info-jumlah-buku" class="text-tintaLembut font-medium">Menampilkan 8 e-book</span>
+            <button
+              type="button"
+              onclick="resetFilter()"
+              class="text-xs font-semibold text-terakota hover:underline cursor-pointer"
+            >
+              Reset filter
+            </button>
+          </div>
+        </div>
+
+        <!-- Tombol Filter Kategori -->
+        <div id="wadah-kategori" class="flex flex-wrap items-center gap-2 pt-1 border-t border-garis/70" role="group" aria-label="Filter Kategori E-Book">
+          <!-- Diisi otomatis via JavaScript -->
+        </div>
+      </div>
+
+      <!-- Grid Kartu E-Book -->
+      <div id="grid-katalog" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Kartu e-book dirender secara dinamis via JavaScript -->
+      </div>
+
+      <!-- Pesan Kosong Jika Hasil Pencarian Tidak Ditemukan -->
+      <div id="empty-katalog" class="hidden text-center py-16 px-4 bg-white rounded-3xl border border-garis mt-6">
+        <div class="w-12 h-12 rounded-2xl bg-kertasGelap text-tintaLembut flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </div>
+        <h3 class="font-serif text-xl font-bold text-tinta mb-1">E-book belum ditemukan</h3>
+        <p class="text-sm text-tintaLembut mb-4">Coba kata kunci lain atau pilih kategori "Semua".</p>
+        <button
+          type="button"
+          onclick="resetFilter()"
+          class="px-5 py-2.5 rounded-full bg-tinta text-kertas text-sm font-semibold hover:bg-terakota transition-colors cursor-pointer"
+        >
+          Tampilkan Semua E-Book
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== PAKET BUNDLING HEMAT ==================== -->
+  <section id="bundling" class="py-14 sm:py-16 bg-kertasGelap/70 border-y border-garis">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <span class="inline-block text-xs font-bold uppercase tracking-widest text-pinus mb-1">Lebih Hemat & Terstruktur</span>
+          <h2 class="font-serif text-3xl sm:text-4xl font-bold text-tinta">Paket Bundling Pilihan</h2>
+        </div>
+        <p class="text-sm text-tintaLembut max-w-md">
+          Gabungkan beberapa e-book sekaligus ke keranjang belanja Anda dan padukan dengan kode promo <strong class="text-terakota">HEMAT20</strong>.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Bundling 1 -->
+        <div class="bg-white rounded-3xl p-6 sm:p-7 border border-garis shadow-editorial flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-pinusTerang text-pinus text-xs font-bold">Paket Karier & Digital</span>
+              <span class="text-xs font-semibold text-terakota">Hemat Rp 49.000</span>
+            </div>
+            <h3 class="font-serif text-2xl font-bold text-tinta mb-2">Bundling Kreator & Web Profesional</h3>
+            <p class="text-sm text-tintaLembut mb-4">
+              Termasuk <em>Arsitektur Web Modern</em>, <em>Desain Antarmuka Berpusat pada Manusia</em>, dan <em>Menulis Produk & Konten yang Meyakinkan</em>.
+            </p>
+          </div>
+          <div class="flex items-center justify-between gap-4 pt-4 border-t border-garis">
+            <div>
+              <span class="text-xs line-through text-tintaLembut block">Rp 257.000</span>
+              <span class="text-xl font-bold text-tinta">Rp 208.000</span>
+            </div>
+            <button
+              type="button"
+              onclick="tambahBundling(['arsitektur-web-modern', 'desain-antarmuka-manusia', 'menulis-konten-meyakinkan'], 'Bundling Kreator & Web Profesional')"
+              class="px-5 py-2.5 rounded-xl bg-terakota hover:bg-terakotaGelap text-white text-sm font-semibold transition-colors cursor-pointer"
+            >
+              Masukkan Paket
+            </button>
+          </div>
+        </div>
+
+        <!-- Bundling 2 -->
+        <div class="bg-white rounded-3xl p-6 sm:p-7 border border-garis shadow-editorial flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              <span class="px-3 py-1 rounded-full bg-emas/20 text-tinta text-xs font-bold">Paket Finansial & Fokus</span>
+              <span class="text-xs font-semibold text-terakota">Hemat Rp 44.000</span>
+            </div>
+            <h3 class="font-serif text-2xl font-bold text-tinta mb-2">Bundling Kemandirian Finansial & Habit</h3>
+            <p class="text-sm text-tintaLembut mb-4">
+              Termasuk <em>Arus Kas Sehat untuk Usaha & Keluarga</em>, <em>Seni Fokus di Tengah Notifikasi</em>, dan <em>Berpikir Jernih Mengambil Keputusan</em>.
+            </p>
+          </div>
+          <div class="flex items-center justify-between gap-4 pt-4 border-t border-garis">
+            <div>
+              <span class="text-xs line-through text-tintaLembut block">Rp 238.000</span>
+              <span class="text-xl font-bold text-tinta">Rp 194.000</span>
+            </div>
+            <button
+              type="button"
+              onclick="tambahBundling(['arus-kas-sehat', 'seni-fokus-notifikasi', 'berpikir-jernih-keputusan'], 'Bundling Kemandirian Finansial & Habit')"
+              class="px-5 py-2.5 rounded-xl bg-pinus hover:bg-pinus/90 text-white text-sm font-semibold transition-colors cursor-pointer"
+            >
+              Masukkan Paket
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TESTIMONI PEMBACA ==================== -->
+  <section id="testimoni" class="py-14 sm:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <p class="text-xs font-bold uppercase tracking-widest text-terakota mb-1.5">Suara Pembaca</p>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-tinta mb-3">Dipercaya Ribuan Pembaca Indonesia</h2>
+        <p class="text-sm sm:text-base text-tintaLembut">
+          Kami merancang setiap halaman agar ringkas, tidak bertele-tele, dan langsung bisa diterapkan dalam pekerjaan maupun keseharian.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Testimoni 1 -->
+        <article class="bg-white rounded-3xl p-6 border border-garis shadow-editorial flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-1 text-emas mb-4" aria-label="Rating 5 dari 5">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            </div>
+            <p class="font-serif text-lg text-tinta leading-relaxed mb-5">
+              “Tata letaknya enak banget dibaca di iPad. Materinya padat daging dan langsung saya pakai untuk merapikan struktur proyek web klien kami.”
+            </p>
+          </div>
+          <div class="flex items-center gap-3 pt-4 border-t border-garis">
+            <div class="w-10 h-10 rounded-full bg-pinus text-kertas font-bold text-sm flex items-center justify-center">R</div>
+            <div>
+              <h3 class="text-sm font-bold text-tinta">Raka Pratama</h3>
+              <p class="text-xs text-tintaLembut">Frontend Developer • Bandung</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Testimoni 2 -->
+        <article class="bg-white rounded-3xl p-6 border border-garis shadow-editorial flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-1 text-emas mb-4" aria-label="Rating 5 dari 5">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            </div>
+            <p class="font-serif text-lg text-tinta leading-relaxed mb-5">
+              “Panduan arus kasnya membumi dan tidak pakai istilah rumit. Dalam dua minggu evaluasi keuangan usaha kecil saya jadi jauh lebih terarah.”
+            </p>
+          </div>
+          <div class="flex items-center gap-3 pt-4 border-t border-garis">
+            <div class="w-10 h-10 rounded-full bg-terakota text-white font-bold text-sm flex items-center justify-center">N</div>
+            <div>
+              <h3 class="text-sm font-bold text-tinta">Nadia Kusuma</h3>
+              <p class="text-xs text-tintaLembut">Pemilik Kedai & Usaha Lokal • Yogyakarta</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Testimoni 3 -->
+        <article class="bg-white rounded-3xl p-6 border border-garis shadow-editorial flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-1 text-emas mb-4" aria-label="Rating 5 dari 5">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            </div>
+            <p class="font-serif text-lg text-tinta leading-relaxed mb-5">
+              “Format EPUB-nya rapi sekali di e-reader saya. Bab per bab disusun logis sehingga mudah dipahami sela-sela waktu kerja.”
+            </p>
+          </div>
+          <div class="flex items-center gap-3 pt-4 border-t border-garis">
+            <div class="w-10 h-10 rounded-full bg-tinta text-kertas font-bold text-sm flex items-center justify-center">D</div>
+            <div>
+              <h3 class="text-sm font-bold text-tinta">Dimas Hermawan</h3>
+              <p class="text-xs text-tintaLembut">Analis Riset & Penulis • Surabaya</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FAQ SINGKAT ==================== -->
+  <section id="faq" class="py-14 sm:py-16 bg-kertasGelap/60 border-t border-garis">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10">
+        <p class="text-xs font-bold uppercase tracking-widest text-pinus mb-1.5">Tanya Jawab</p>
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold text-tinta">Pertanyaan yang Sering Diajukan</h2>
+      </div>
+
+      <div id="wadah-faq" class="space-y-3.5">
+        <!-- Item FAQ 1 -->
+        <div class="bg-white rounded-2xl border border-garis overflow-hidden">
+          <button
+            type="button"
+            onclick="toggleFaq(0)"
+            class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 font-semibold text-sm sm:text-base text-tinta hover:bg-kertas/60 transition-colors cursor-pointer"
+            aria-expanded="true"
+            id="faq-btn-0"
+          >
+            <span>Format file apa saja yang didapatkan setelah membeli e-book?</span>
+            <span id="faq-icon-0" class="text-xl font-normal text-terakota shrink-0">−</span>
+          </button>
+          <div id="faq-panel-0" class="px-5 pb-4 text-sm text-tintaLembut leading-relaxed">
+            Setiap e-book di LenteraPustaka tersedia dalam format <strong>PDF</strong> (dengan tipografi tajam dan tautan daftar isi) serta <strong>EPUB</strong> yang menyesuaikan ukuran huruf secara fleksibel di ponsel, tablet, dan perangkat e-reader.
+          </div>
+        </div>
+
+        <!-- Item FAQ 2 -->
+        <div class="bg-white rounded-2xl border border-garis overflow-hidden">
+          <button
+            type="button"
+            onclick="toggleFaq(1)"
+            class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 font-semibold text-sm sm:text-base text-tinta hover:bg-kertas/60 transition-colors cursor-pointer"
+            aria-expanded="false"
+            id="faq-btn-1"
+          >
+            <span>Bagaimana cara menggunakan kode promo HEMAT20?</span>
+            <span id="faq-icon-1" class="text-xl font-normal text-terakota shrink-0">+</span>
+          </button>
+          <div id="faq-panel-1" class="hidden px-5 pb-4 text-sm text-tintaLembut leading-relaxed">
+            Buka keranjang belanja Anda, masukkan kode <strong class="text-terakota">HEMAT20</strong> pada kolom kode promo, lalu klik tombol <strong>Terapkan</strong>. Diskon 20% akan langsung dihitung otomatis dari subtotal pesanan Anda.
+          </div>
+        </div>
+
+        <!-- Item FAQ 3 -->
+        <div class="bg-white rounded-2xl border border-garis overflow-hidden">
+          <button
+            type="button"
+            onclick="toggleFaq(2)"
+            class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 font-semibold text-sm sm:text-base text-tinta hover:bg-kertas/60 transition-colors cursor-pointer"
+            aria-expanded="false"
+            id="faq-btn-2"
+          >
+            <span>Apakah e-book dapat dibaca secara offline dan diakses selamanya?</span>
+            <span id="faq-icon-2" class="text-xl font-normal text-terakota shrink-0">+</span>
+          </button>
+          <div id="faq-panel-2" class="hidden px-5 pb-4 text-sm text-tintaLembut leading-relaxed">
+            Ya. Setelah file diunduh ke perangkat pribadi Anda, e-book dapat dibaca kapan saja secara offline tanpa batasan masa aktif.
+          </div>
+        </div>
+
+        <!-- Item FAQ 4 -->
+        <div class="bg-white rounded-2xl border border-garis overflow-hidden">
+          <button
+            type="button"
+            onclick="toggleFaq(3)"
+            class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 font-semibold text-sm sm:text-base text-tinta hover:bg-kertas/60 transition-colors cursor-pointer"
+            aria-expanded="false"
+            id="faq-btn-3"
+          >
+            <span>Apakah saya bisa membeli paket bundling untuk tim atau komunitas belajar?</span>
+            <span id="faq-icon-3" class="text-xl font-normal text-terakota shrink-0">+</span>
+          </button>
+          <div id="faq-panel-3" class="hidden px-5 pb-4 text-sm text-tintaLembut leading-relaxed">
+            Tentu. Anda dapat menambahkan paket bundling ke keranjang, mengatur jumlah unit sesuai kebutuhan tim, dan menyelesaikan simulasi pesanan secara instan.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-tinta text-kertas/90 py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+      <div class="flex items-center gap-2.5">
+        <span class="font-serif text-xl font-bold text-white">LenteraPustaka</span>
+        <span class="text-kertas/50">•</span>
+        <span class="text-kertas/70">Bacaan Bernilai untuk Pertumbuhan Berkelanjutan</span>
+      </div>
+      <p class="text-xs text-kertas/65">
+        © <span id="tahun-sekarang">2026</span> LenteraPustaka. Siap di-hosting di GitHub Pages.
+      </p>
+    </div>
+  </footer>
+
+  <!-- ==================== MODAL SINOPSIS & PRATINJAU BAB ==================== -->
+  <div
+    id="modal-sinopsis"
+    class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-tinta/60 backdrop-blur-xs"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="judul-modal-sinopsis"
+  >
+    <div class="bg-kertas rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-garis shadow-angkat p-6 sm:p-8 relative">
+      <button
+        type="button"
+        onclick="tutupSinopsis()"
+        class="w-9 h-9 rounded-full bg-white border border-garis hover:bg-kertasGelap text-tinta flex items-center justify-center absolute top-5 right-5 font-bold cursor-pointer"
+        aria-label="Tutup modal sinopsis"
+      >
+        ✕
+      </button>
+
+      <div id="isi-modal-sinopsis">
+        <!-- Diisi dinamis via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== DRAWER KERANJANG BELANJA & CHECKOUT ==================== -->
+  <div
+    id="overlay-keranjang"
+    onclick="tutupKeranjang()"
+    class="fixed inset-0 z-50 hidden bg-tinta/55 backdrop-blur-xs transition-opacity"
+    aria-hidden="true"
+  ></div>
+
+  <aside
+    id="drawer-keranjang"
+    class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-kertas border-l border-garis shadow-angkat translate-x-full panel-transition flex flex-col"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Keranjang Belanja"
+  >
+    <!-- Header Drawer -->
+    <div class="px-6 py-5 border-b border-garis flex items-center justify-between bg-white">
+      <div>
+        <h2 class="font-serif text-2xl font-bold text-tinta">Keranjang Anda</h2>
+        <p id="subjudul-keranjang" class="text-xs text-tintaLembut">0 item dipilih</p>
+      </div>
+      <button
+        type="button"
+        onclick="tutupKeranjang()"
+        class="w-9 h-9 rounded-full border border-garis hover:bg-kertas text-tinta flex items-center justify-center font-bold cursor-pointer"
+        aria-label="Tutup keranjang"
+      >
+        ✕
+      </button>
+    </div>
+
+    <!-- Daftar Item Keranjang -->
+    <div id="daftar-item-keranjang" class="flex-1 overflow-y-auto px-6 py-5 space-y-4">
+      <!-- Diisi dinamis via JavaScript -->
+    </div>
+
+    <!-- Bagian Promo, Ringkasan Biaya & Tombol Checkout -->
+    <div class="p-6 bg-white border-t border-garis space-y-4">
+      <!-- Form Kode Promo -->
+      <div>
+        <label for="input-kode-promo" class="block text-xs font-semibold text-tinta mb-1.5">
+          Kode Promo (Coba <span class="text-terakota">HEMAT20</span> untuk diskon 20%)
+        </label>
+        <div class="flex gap-2">
+          <input
+            type="text"
+            id="input-kode-promo"
+            placeholder="Masukkan kode promo..."
+            class="flex-1 px-3.5 py-2 rounded-xl bg-kertas border border-garis focus:border-terakota focus:bg-white focus:outline-none text-sm uppercase font-medium text-tinta"
+          />
+          <button
+            type="button"
+            onclick="terapkanKodePromo()"
+            class="px-4 py-2 rounded-xl bg-pinus hover:bg-pinus/90 text-white text-sm font-semibold transition-colors cursor-pointer"
+          >
+            Terapkan
+          </button>
+        </div>
+        <p id="pesan-promo" class="text-xs mt-1.5 min-h-[1rem]"></p>
+      </div>
+
+      <!-- Ringkasan Harga -->
+      <div class="space-y-1.5 pt-2 border-t border-garis text-sm">
+        <div class="flex justify-between text-tintaLembut">
+          <span>Subtotal</span>
+          <span id="ringkasan-subtotal" class="font-medium text-tinta">Rp 0</span>
+        </div>
+        <div id="baris-diskon" class="hidden justify-between text-pinus font-medium">
+          <span>Diskon Promo (20%)</span>
+          <span id="ringkasan-diskon">-Rp 0</span>
+        </div>
+        <div class="flex justify-between text-base font-bold text-tinta pt-1.5 border-t border-garis">
+          <span>Total Pembayaran</span>
+          <span id="ringkasan-total" class="text-terakota text-lg">Rp 0</span>
+        </div>
+      </div>
+
+      <!-- Tombol Checkout Simulasi Instan -->
+      <button
+        type="button"
+        id="btn-checkout"
+        onclick="bukaFormCheckout()"
+        disabled
+        class="w-full py-3.5 rounded-xl bg-terakota hover:bg-terakotaGelap disabled:bg-garis disabled:text-tintaLembut text-white font-semibold text-sm sm:text-base transition-colors cursor-pointer disabled:cursor-not-allowed"
+      >
+        Lanjutkan ke Checkout Instan
+      </button>
+    </div>
+  </aside>
+
+  <!-- ==================== MODAL CHECKOUT & KONFIRMASI PESANAN ==================== -->
+  <div
+    id="modal-checkout"
+    class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-tinta/65 backdrop-blur-xs"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="judul-modal-checkout"
+  >
+    <div class="bg-kertas rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-garis shadow-angkat p-6 sm:p-7 relative">
+      <button
+        type="button"
+        onclick="tutupModalCheckout()"
+        class="w-9 h-9 rounded-full bg-white border border-garis hover:bg-kertasGelap text-tinta flex items-center justify-center absolute top-5 right-5 font-bold cursor-pointer"
+        aria-label="Tutup jendela checkout"
+      >
+        ✕
+      </button>
+
+      <!-- Langkah 1: Form Pembeli -->
+      <div id="form-checkout-container">
+        <span class="inline-block text-xs font-bold uppercase tracking-widest text-terakota mb-1">Checkout Instan</span>
+        <h2 id="judul-modal-checkout" class="font-serif text-2xl sm:text-3xl font-bold text-tinta mb-2">
+          Selesaikan Pesanan Anda
+        </h2>
+        <p class="text-xs sm:text-sm text-tintaLembut mb-5">
+          Simulasi pemesanan langsung di browser—tanpa biaya sungguhan. Tautan akses e-book akan muncul segera setelah dikonfirmasi.
+        </p>
+
+        <form onsubmit="prosesKonfirmasiPesanan(event)" class="space-y-4">
+          <div>
+            <label for="nama-pembeli" class="block text-xs font-semibold text-tinta mb-1">Nama Lengkap</label>
+            <input
+              type="text"
+              id="nama-pembeli"
+              required
+              placeholder="Contoh: Sinta Maharani"
+              class="w-full px-4 py-2.5 rounded-xl bg-white border border-garis focus:border-terakota focus:outline-none text-sm text-tinta"
+            />
+          </div>
+
+          <div>
+            <label for="email-pembeli" class="block text-xs font-semibold text-tinta mb-1">Alamat Email (untuk pengiriman file PDF/EPUB)</label>
+            <input
+              type="email"
+              id="email-pembeli"
+              required
+              placeholder="nama@email.com"
+              class="w-full px-4 py-2.5 rounded-xl bg-white border border-garis focus:border-terakota focus:outline-none text-sm text-tinta"
+            />
+          </div>
+
+          <div>
+            <label for="metode-bayar" class="block text-xs font-semibold text-tinta mb-1">Metode Pembayaran Simulasi</label>
+            <select
+              id="metode-bayar"
+              class="w-full px-4 py-2.5 rounded-xl bg-white border border-garis focus:border-terakota focus:outline-none text-sm text-tinta cursor-pointer"
+            >
+              <option value="QRIS Instan">QRIS Instan (Semua E-Wallet & Mobile Banking)</option>
+              <option value="Transfer Bank Virtual Account">Transfer Bank Virtual Account</option>
+              <option value="Kartu Debit / Kredit">Kartu Debit / Kredit</option>
+            </select>
+          </div>
+
+          <!-- Ringkasan Akhir di Modal Checkout -->
+          <div class="p-4 rounded-2xl bg-white border border-garis space-y-1.5 text-sm">
+            <div class="flex justify-between text-tintaLembut">
+              <span>Jumlah Item</span>
+              <span id="checkout-jumlah-item" class="font-semibold text-tinta">0 buku</span>
+            </div>
+            <div class="flex justify-between text-base font-bold text-tinta pt-1 border-t border-garis">
+              <span>Total Dibayar</span>
+              <span id="checkout-total-bayar" class="text-terakota">Rp 0</span>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="w-full py-3.5 rounded-xl bg-pinus hover:bg-pinus/90 text-white font-semibold text-sm sm:text-base transition-colors cursor-pointer"
+          >
+            Konfirmasi & Dapatkan E-Book
+          </button>
+        </form>
+      </div>
+
+      <!-- Langkah 2: Konfirmasi Pesanan Berhasil -->
+      <div id="konfirmasi-pesanan-container" class="hidden text-center py-2 space-y-4">
+        <div class="w-14 h-14 rounded-2xl bg-pinusTerang text-pinus flex items-center justify-center mx-auto text-2xl font-bold">
+          ✓
+        </div>
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-pinus">Pesanan Terkonfirmasi</span>
+          <h3 class="font-serif text-2xl sm:text-3xl font-bold text-tinta mt-1">Terima Kasih, <span id="konfirmasi-nama">Pembaca</span>!</h3>
+          <p class="text-xs sm:text-sm text-tintaLembut mt-1">
+            Kode Pesanan: <strong id="konfirmasi-kode" class="text-tinta">LP-000000</strong> • Dikirim ke <strong id="konfirmasi-email" class="text-tinta">-</strong>
+          </p>
+        </div>
+
+        <div id="daftar-unduhan-ebook" class="text-left bg-white rounded-2xl p-4 border border-garis space-y-2.5 max-h-52 overflow-y-auto">
+          <!-- Daftar file e-book hasil pesanan -->
+        </div>
+
+        <div class="pt-2 flex flex-col sm:flex-row gap-2.5">
+          <button
+            type="button"
+            onclick="tutupModalCheckout()"
+            class="w-full py-3 rounded-xl bg-tinta hover:bg-terakota text-kertas text-sm font-semibold transition-colors cursor-pointer"
+          >
+            Kembali ke Katalog
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFIKASI HALUS ==================== -->
+  <div
+    id="toast-notifikasi"
+    class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] pointer-events-none opacity-0 translate-y-3 transition-all duration-300"
+    role="status"
+    aria-live="polite"
+  >
+    <div id="toast-teks" class="px-4 py-2.5 rounded-full bg-tinta text-kertas text-xs sm:text-sm font-medium shadow-angkat flex items-center gap-2">
+      <span>✓</span>
+      <span id="toast-pesan">Ditambahkan ke keranjang</span>
+    </div>
+  </div>
+
+  <!-- ==================== LOGIKA APLIKASI JAVASCRIPT ==================== -->
+  <script>
+    /**
+     * Data Katalog E-Book LenteraPustaka
+     * Setiap item memiliki metadata lengkap, warna tema sampul, sinopsis, daftar bab, dan cuplikan pratinjau.
+     */
+    const KATALOG_EBOOK = [
+      {
+        id: 'arsitektur-web-modern',
+        judul: 'Arsitektur Web Modern yang Cepat & Tahan Banting',
+        penulis: 'Hendra Wijaya',
+        kategori: 'Teknologi & Web',
+        format: 'PDF + EPUB',
+        halaman: 214,
+        rating: 4.9,
+        ulasan: 318,
+        terpopuler: 100,
+        harga: 89000,
+        tema: {
+          dari: '#234E3D',
+          ke: '#122A21',
+          aksen: '#E9B44C',
+          ikon: 'kode',
+        },
+        sinopsis:
+          'Buku panduan menyeluruh untuk merancang aplikasi web modern yang ringan, mudah dirawat, dan tangguh menghadapi lonjakan trafik. Membahas struktur komponen, manajemen state, optimasi aset, hingga praktik keamanan dasar.',
+        bab: [
+          'Bab 1: Fondasi Web Cepat & Anggaran Performa',
+          'Bab 2: Merancang Komponen yang Dapat Digunakan Kembali',
+          'Bab 3: Pola Data, Caching, dan Ketahanan Jaringan',
+          'Bab 4: Checklist Rilis & Pemantauan di Produksi',
+        ],
+        pratinjau:
+          '“Kecepatan sebuah situs web bukan sekadar angka metrik—ia adalah bentuk penghormatan terhadap waktu pembaca Anda. Antarmuka yang merespons dalam sekejap membangun rasa percaya sejak detik pertama.”',
+      },
+      {
+        id: 'arus-kas-sehat',
+        judul: 'Arus Kas Sehat untuk Usaha & Keluarga',
+        penulis: 'Ratna Pramesti',
+        kategori: 'Bisnis & Keuangan',
+        format: 'PDF + EPUB',
+        halaman: 178,
+        rating: 4.9,
+        ulasan: 274,
+        terpopuler: 95,
+        harga: 79000,
+        tema: {
+          dari: '#C85A32',
+          ke: '#7D3217',
+          aksen: '#F7D08A',
+          ikon: 'keuangan',
+        },
+        sinopsis:
+          'Pelajari cara memisahkan keuangan pribadi dan usaha secara tegas, menyusun cadangan darurat bertahap, serta membaca laporan arus kas bulanan tanpa kebingungan istilah akuntansi yang rumit.',
+        bab: [
+          'Bab 1: Memetakan Kebocoran Halus Setiap Bulan',
+          'Bab 2: Sistem Pos Rekening & Dana Cadangan',
+          'Bab 3: Menetapkan Harga Jual yang Menguntungkan',
+          'Bab 4: Evaluasi Mingguan 20 Menit yang Konsisten',
+        ],
+        pratinjau:
+          '“Omzet besar belum tentu berarti napas usaha panjang. Arus kas yang terukur dan terencana memberi ruang bernapas ketika musim sepi tiba.”',
+      },
+      {
+        id: 'seni-fokus-notifikasi',
+        judul: 'Seni Fokus di Tengah Notifikasi',
+        penulis: 'Bagas Aditama',
+        kategori: 'Pengembangan Diri',
+        format: 'PDF + EPUB',
+        halaman: 162,
+        rating: 4.8,
+        ulasan: 215,
+        terpopuler: 90,
+        harga: 74000,
+        tema: {
+          dari: '#2D4B6E',
+          ke: '#182A40',
+          aksen: '#F2C14E',
+          ikon: 'fokus',
+        },
+        sinopsis:
+          'Strategi realistis membangun blok kerja mendalam (deep work) tanpa harus menghilang dari dunia digital. Dilengkapi panduan mengatur jadwal harian, batas distraksi, dan pemulihan energi mental.',
+        bab: [
+          'Bab 1: Anatomi Kelelahan Kognitif Modern',
+          'Bab 2: Menata Lingkungan Kerja & Notifikasi',
+          'Bab 3: Teknik Blok Waktu 90 Menit untuk Tugas Kritis',
+          'Bab 4: Istirahat Berkualitas Agar Tidak Burnout',
+        ],
+        pratinjau:
+          '“Karya terbaik jarang lahir dari upaya terburu-buru di sela puluhan notifikasi. Ia tumbuh dari perhatian penuh yang dilindungi dengan sadar.”',
+      },
+      {
+        id: 'logika-data-sains',
+        judul: 'Logika Data & Statistika untuk Riset Sehari-Hari',
+        penulis: 'Dr. Wahyu Santoso',
+        kategori: 'Sains & Studi',
+        format: 'PDF + EPUB',
+        halaman: 246,
+        rating: 4.9,
+        ulasan: 189,
+        terpopuler: 86,
+        harga: 95000,
+        tema: {
+          dari: '#3B4252',
+          ke: '#1F242D',
+          aksen: '#88C0D0',
+          ikon: 'sains',
+        },
+        sinopsis:
+          'Jembatan praktis antara teori statistika dan interpretasi data nyata bagi mahasiswa, peneliti muda, maupun analis. Mengulas cara membaca grafik, menghindari bias sampel, dan menarik kesimpulan yang jujur.',
+        bab: [
+          'Bab 1: Cara Berpikir Ilmiah atas Klaim Angka',
+          'Bab 2: Distribusi, Variasi, dan Jebakan Rata-Rata',
+          'Bab 3: Visualisasi Data yang Jujur & Jelas',
+          'Bab 4: Menyusun Laporan Temuan yang Mudah Dipahami',
+        ],
+        pratinjau:
+          '“Data tidak pernah berbicara sendiri tanpa konteks. Pertanyaan yang tepat sebelum menghitung selalu lebih penting daripada rumus yang paling rumit.”',
+      },
+      {
+        id: 'desain-antarmuka-manusia',
+        judul: 'Desain Antarmuka Berpusat pada Manusia',
+        penulis: 'Ayu Larasati',
+        kategori: 'Teknologi & Web',
+        format: 'PDF + EPUB',
+        halaman: 192,
+        rating: 4.8,
+        ulasan: 164,
+        terpopuler: 82,
+        harga: 84000,
+        tema: {
+          dari: '#8C3B4A',
+          ke: '#521E28',
+          aksen: '#F4C095',
+          ikon: 'kode',
+        },
+        sinopsis:
+          'Panduan visual dan praktis menyusun hierarki informasi, tipografi yang mudah dibaca, kontras warna yang ramah mata, serta alur interaksi yang intuitif untuk produk digital.',
+        bab: [
+          'Bab 1: Hierarki Visual & Keterbacaan Tipografi',
+          'Bab 2: Sistem Warna, Kontras, dan Aksesibilitas',
+          'Bab 3: Alur Formulir & Umpan Balik Pengguna',
+          'Bab 4: Membangun Panduan Gaya yang Konsisten',
+        ],
+        pratinjau:
+          '“Desain yang baik tidak berteriak meminta perhatian; ia menuntun mata pengguna secara tenang menuju hal yang memang sedang mereka cari.”',
+      },
+      {
+        id: 'menulis-konten-meyakinkan',
+        judul: 'Menulis Produk & Konten yang Meyakinkan',
+        penulis: 'Fajar Nugroho',
+        kategori: 'Bisnis & Keuangan',
+        format: 'PDF + EPUB',
+        halaman: 154,
+        rating: 4.8,
+        ulasan: 142,
+        terpopuler: 78,
+        harga: 84000,
+        tema: {
+          dari: '#6B4423',
+          ke: '#3D2512',
+          aksen: '#F2B84B',
+          ikon: 'keuangan',
+        },
+        sinopsis:
+          'Kuasai seni menyampaikan nilai produk dengan bahasa yang hangat, jujur, dan relevan dengan kebutuhan pembaca—mulai dari halaman arahan, katalog, hingga email tindak lanjut.',
+        bab: [
+          'Bab 1: Menulis dari Sudut Pandang Pembaca',
+          'Bab 2: Meracik Judul & Pembuka yang Mengait',
+          'Bab 3: Mengubah Fitur Menjadi Manfaat Nyata',
+          'Bab 4: Mengikis Keraguan dengan Bukti & Kejelasan',
+        ],
+        pratinjau:
+          '“Orang tidak membeli sekadar daftar spesifikasi. Mereka membeli keyakinan bahwa pilihan tersebut akan menyelesaikan masalah mereka.”',
+      },
+      {
+        id: 'berpikir-jernih-keputusan',
+        judul: 'Berpikir Jernih Mengambil Keputusan',
+        penulis: 'Kirana Dewi',
+        kategori: 'Pengembangan Diri',
+        format: 'PDF + EPUB',
+        halaman: 168,
+        rating: 4.9,
+        ulasan: 201,
+        terpopuler: 88,
+        harga: 85000,
+        tema: {
+          dari: '#245247',
+          ke: '#132E27',
+          aksen: '#E6C27A',
+          ikon: 'fokus',
+        },
+        sinopsis:
+          'Kerangka berpikir praktis untuk menghadapi pilihan penting dalam karier, studi, maupun kehidupan pribadi. Membantu mengenali bias kognitif dan menimbang risiko secara seimbang.',
+        bab: [
+          'Bab 1: Mengapa Kita Sering Terjebak Bias Cepat',
+          'Bab 2: Matriks Pertimbangan & Skenario Terbaik-Terburuk',
+          'Bab 3: Mengelola Penyesalan & Ketidakpastian',
+          'Bab 4: Meninjau Kembali Keputusan Setelah 90 Hari',
+        ],
+        pratinjau:
+          '“Keputusan yang matang bukan berarti tanpa risiko, melainkan keputusan yang risikonya sudah dipahami dengan kepala dingin sejak awal.”',
+      },
+      {
+        id: 'metode-belajar-mandiri',
+        judul: 'Metode Belajar Mandiri yang Terukur',
+        penulis: 'Ilham Ramadhan',
+        kategori: 'Sains & Studi',
+        format: 'PDF + EPUB',
+        halaman: 184,
+        rating: 4.7,
+        ulasan: 129,
+        terpopuler: 75,
+        harga: 72000,
+        tema: {
+          dari: '#354F52',
+          ke: '#1B2B2D',
+          aksen: '#CAD2C5',
+          ikon: 'sains',
+        },
+        sinopsis:
+          'Panduan belajar aktif berbasis bukti untuk menguasai keterampilan atau mata pelajaran baru lebih efisien—memadukan teknik pengingatan aktif, pengulangan berjarak, dan catatan ringkas.',
+        bab: [
+          'Bab 1: Ilusi Kefasihan Saat Membaca Ulang',
+          'Bab 2: Pengingatan Aktif & Catatan Berbasis Pertanyaan',
+          'Bab 3: Jadwal Pengulangan Berjarak yang Realistis',
+          'Bab 4: Menguji Pemahaman dengan Menjelaskan Ulang',
+        ],
+        pratinjau:
+          '“Membaca berulang kali terasa nyaman, tetapi menguji ingatan secara aktiflah yang benar-benar menanamkan pemahaman jangka panjang.”',
+      },
+    ];
+
+    const KATEGORI_LIST = [
+      'Semua',
+      'Teknologi & Web',
+      'Bisnis & Keuangan',
+      'Pengembangan Diri',
+      'Sains & Studi',
+    ];
+
+    // State aplikasi
+    let kategoriAktif = 'Semua';
+    let keranjang = []; // [{ id, jumlah }]
+    let kodePromoAktif = null; // contoh: 'HEMAT20'
+    const DISKON_PERSEN = 0.2; // 20%
+
+    /**
+     * Format angka menjadi mata uang Rupiah (contoh: Rp 89.000)
+     */
+    function formatRupiah(angka) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(angka);
+    }
+
+    /**
+     * Menghasilkan ilustrasi SVG estetik sesuai tema tiap e-book
+     */
+    function buatIlustrasiSampul(ebook) {
+      const { dari, ke, aksen, ikon } = ebook.tema;
+      let grafisIkon = '';
+
+      if (ikon === 'kode') {
+        grafisIkon = `
+          <rect x="18" y="18" width="64" height="44" rx="8" fill="rgba(255,255,255,0.12)" stroke="${aksen}" stroke-width="2" />
+          <path d="M36 34L28 40L36 46" stroke="${aksen}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M64 34L72 40L64 46" stroke="${aksen}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+          <line x1="53" y1="31" x2="47" y2="49" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" />
+        `;
+      } else if (ikon === 'keuangan') {
+        grafisIkon = `
+          <circle cx="50" cy="40" r="24" fill="rgba(255,255,255,0.12)" stroke="${aksen}" stroke-width="2" />
+          <path d="M38 48L47 39L53 45L64 32" stroke="${aksen}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+          <polyline points="57 32 64 32 64 39" fill="none" stroke="${aksen}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+        `;
+      } else if (ikon === 'fokus') {
+        grafisIkon = `
+          <circle cx="50" cy="40" r="25" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="2" stroke-dasharray="4 4" />
+          <circle cx="50" cy="40" r="14" fill="rgba(255,255,255,0.14)" stroke="${aksen}" stroke-width="2.2" />
+          <circle cx="50" cy="40" r="4" fill="${aksen}" />
+        `;
+      } else {
+        grafisIkon = `
+          <rect x="24" y="46" width="10" height="16" rx="2" fill="${aksen}" opacity="0.85" />
+          <rect x="40" y="34" width="10" height="28" rx="2" fill="#FFFFFF" opacity="0.85" />
+          <rect x="56" y="24" width="10" height="38" rx="2" fill="${aksen}" />
+        `;
+      }
+
+      return `
+        <div
+          class="sampul-buku rounded-2xl p-5 text-white relative overflow-hidden flex flex-col justify-between min-h-[210px]"
+          style="background: linear-gradient(145deg, ${dari} 0%, ${ke} 100%);"
+        >
+          <div class="flex items-center justify-between gap-2 z-10">
+            <span class="px-2.5 py-1 rounded-full bg-black/25 backdrop-blur-xs text-[11px] font-semibold tracking-wide">
+              ${ebook.kategori}
+            </span>
+            <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-white/15">
+              ${ebook.format}
+            </span>
+          </div>
+
+          <div class="my-3 flex items-center justify-center z-10">
+            <svg class="w-24 h-20" viewBox="0 0 100 76" fill="none" aria-hidden="true">
+              ${grafisIkon}
+            </svg>
+          </div>
+
+          <div class="z-10 border-t border-white/15 pt-2.5 flex items-center justify-between text-[11px] text-white/80">
+            <span>${ebook.halaman} Halaman</span>
+            <span>★ ${ebook.rating.toFixed(1)} (${ebook.ulasan})</span>
+          </div>
+        </div>
+      `;
+    }
+
+    /**
+     * Merender tombol filter kategori
+     */
+    function renderKategori() {
+      const wadah = document.getElementById('wadah-kategori');
+      wadah.innerHTML = KATEGORI_LIST.map((kat) => {
+        const aktif = kategoriAktif === kat;
+        const kelas = aktif
+          ? 'bg-tinta text-kertas border-tinta shadow-xs'
+          : 'bg-kertas text-tintaLembut border-garis hover:text-tinta hover:bg-kertasGelap';
+        return `
+          <button
+            type="button"
+            onclick="pilihKategori('${kat.replace(/'/g, "\\'")}')"
+            class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-semibold border transition-all cursor-pointer ${kelas}"
+            aria-pressed="${aktif}"
+          >
+            ${kat}
+          </button>
+        `;
+      }).join('');
+    }
+
+    /**
+     * Mengubah kategori aktif dan merender ulang katalog
+     */
+    function pilihKategori(kat) {
+      kategoriAktif = kat;
+      renderKategori();
+      renderKatalog();
+    }
+
+    /**
+     * Mereset pencarian, kategori, dan urutan ke kondisi awal
+     */
+    function resetFilter() {
+      kategoriAktif = 'Semua';
+      document.getElementById('input-pencarian').value = '';
+      document.getElementById('select-urutan').value = 'terpopuler';
+      renderKategori();
+      renderKatalog();
+    }
+
+    /**
+     * Merender grid katalog e-book berdasarkan pencarian, kategori, dan urutan
+     */
+    function renderKatalog() {
+      const kataKunci = document.getElementById('input-pencarian').value.trim().toLowerCase();
+      const urutan = document.getElementById('select-urutan').value;
+      const grid = document.getElementById('grid-katalog');
+      const emptyState = document.getElementById('empty-katalog');
+      const infoJumlah = document.getElementById('info-jumlah-buku');
+
+      let hasil = KATALOG_EBOOK.filter((buku) => {
+        const cocokKategori = kategoriAktif === 'Semua' || buku.kategori === kategoriAktif;
+        const cocokTeks =
+          !kataKunci ||
+          buku.judul.toLowerCase().includes(kataKunci) ||
+          buku.penulis.toLowerCase().includes(kataKunci) ||
+          buku.kategori.toLowerCase().includes(kataKunci) ||
+          buku.sinopsis.toLowerCase().includes(kataKunci);
+        return cocokKategori && cocokTeks;
+      });
+
+      if (urutan === 'harga-terendah') {
+        hasil.sort((a, b) => a.harga - b.harga);
+      } else if (urutan === 'harga-tertinggi') {
+        hasil.sort((a, b) => b.harga - a.harga);
+      } else {
+        hasil.sort((a, b) => b.terpopuler - a.terpopuler);
+      }
+
+      infoJumlah.textContent = `Menampilkan ${hasil.length} e-book`;
+
+      if (hasil.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      grid.innerHTML = hasil
+        .map(
+          (buku) => `
+          <article class="buku-card bg-white rounded-3xl p-4 border border-garis shadow-editorial hover:shadow-angkat transition-shadow flex flex-col justify-between">
+            <div>
+              ${buatIlustrasiSampul(buku)}
+
+              <div class="mt-4">
+                <p class="text-xs font-medium text-tintaLembut">Oleh ${buku.penulis}</p>
+                <h3 class="font-serif text-lg font-bold text-tinta leading-snug mt-1 line-clamp-2">
+                  ${buku.judul}
+                </h3>
+                <p class="text-xs text-tintaLembut mt-2 line-clamp-2 leading-relaxed">
+                  ${buku.sinopsis}
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-5 pt-4 border-t border-garis">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-xs text-tintaLembut">Harga E-Book</span>
+                <span class="text-base font-bold text-tinta">${formatRupiah(buku.harga)}</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onclick="bukaSinopsis('${buku.id}')"
+                  class="px-3 py-2.5 rounded-xl border border-garis hover:bg-kertas text-xs font-semibold text-tinta transition-colors cursor-pointer"
+                >
+                  Lihat Sinopsis
+                </button>
+                <button
+                  type="button"
+                  onclick="tambahKeKeranjang('${buku.id}')"
+                  class="px-3 py-2.5 rounded-xl bg-terakota hover:bg-terakotaGelap text-white text-xs font-semibold transition-colors cursor-pointer"
+                >
+                  + Keranjang
+                </button>
+              </div>
+            </div>
+          </article>
+        `
+        )
+        .join('');
+    }
+
+    /**
+     * Membuka modal detail sinopsis, ringkasan bab, dan cuplikan pratinjau
+     */
+    function bukaSinopsis(idBuku) {
+      const buku = KATALOG_EBOOK.find((item) => item.id === idBuku);
+      if (!buku) return;
+
+      const modal = document.getElementById('modal-sinopsis');
+      const isi = document.getElementById('isi-modal-sinopsis');
+
+      isi.innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-6 items-start">
+          <div class="sm:col-span-5">
+            ${buatIlustrasiSampul(buku)}
+          </div>
+          <div class="sm:col-span-7 space-y-3 pr-2">
+            <span class="inline-block px-3 py-1 rounded-full bg-pinusTerang text-pinus text-xs font-bold">
+              ${buku.kategori}
+            </span>
+            <h2 id="judul-modal-sinopsis" class="font-serif text-2xl font-bold text-tinta leading-snug">
+              ${buku.judul}
+            </h2>
+            <p class="text-xs sm:text-sm text-tintaLembut">
+              Penulis: <strong class="text-tinta">${buku.penulis}</strong> • ${buku.halaman} hlm • ${buku.format}
+            </p>
+            <p class="text-sm text-tinta/90 leading-relaxed pt-1">
+              ${buku.sinopsis}
+            </p>
+          </div>
+        </div>
+
+        <!-- Ringkasan Bab -->
+        <div class="mt-6 pt-5 border-t border-garis">
+          <h3 class="text-sm font-bold text-tinta uppercase tracking-wider mb-3">Ringkasan Daftar Bab</h3>
+          <ul class="space-y-2 text-sm text-tintaLembut">
+            ${buku.bab
+              .map(
+                (bab) => `
+              <li class="flex items-start gap-2.5 bg-white p-3 rounded-xl border border-garis">
+                <span class="text-terakota font-bold">•</span>
+                <span class="text-tinta">${bab}</span>
+              </li>
+            `
+              )
+              .join('')}
+          </ul>
+        </div>
+
+        <!-- Pratinjau Cuplikan Halaman -->
+        <div class="mt-5 p-4 rounded-2xl bg-kertasGelap border border-garis">
+          <p class="text-[11px] font-bold uppercase tracking-wider text-pinus mb-1.5">Pratinjau Cuplikan Isi</p>
+          <p class="font-serif italic text-base text-tinta leading-relaxed">
+            ${buku.pratinjau}
+          </p>
+        </div>
+
+        <!-- Footer Aksi Modal -->
+        <div class="mt-6 pt-4 border-t border-garis flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs text-tintaLembut block">Harga E-Book</span>
+            <span class="text-2xl font-bold text-tinta">${formatRupiah(buku.harga)}</span>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <button
+              type="button"
+              onclick="tutupSinopsis()"
+              class="px-4 py-3 rounded-xl border border-garis hover:bg-white text-sm font-semibold text-tinta cursor-pointer"
+            >
+              Tutup
+            </button>
+            <button
+              type="button"
+              onclick="tambahKeKeranjang('${buku.id}'); tutupSinopsis();"
+              class="px-5 py-3 rounded-xl bg-terakota hover:bg-terakotaGelap text-white text-sm font-semibold transition-colors cursor-pointer"
+            >
+              Tambah ke Keranjang
+            </button>
+          </div>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    /**
+     * Menutup modal sinopsis
+     */
+    function tutupSinopsis() {
+      const modal = document.getElementById('modal-sinopsis');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    /**
+     * Menambah satu e-book ke keranjang
+     */
+    function tambahKeKeranjang(idBuku, tampilkanToast = true) {
+      const buku = KATALOG_EBOOK.find((item) => item.id === idBuku);
+      if (!buku) return;
+
+      const itemAda = keranjang.find((item) => item.id === idBuku);
+      if (itemAda) {
+        itemAda.jumlah += 1;
+      } else {
+        keranjang.push({ id: idBuku, jumlah: 1 });
+      }
+
+      updateKeranjangUI();
+      if (tampilkanToast) {
+        tampilkanNotifikasi(`"${buku.judul}" masuk ke keranjang.`);
+      }
+    }
+
+    /**
+     * Menambahkan beberapa e-book sekaligus untuk paket bundling
+     */
+    function tambahBundling(daftarId, namaPaket) {
+      daftarId.forEach((id) => tambahKeKeranjang(id, false));
+      tampilkanNotifikasi(`${namaPaket} ditambahkan ke keranjang.`);
+      bukaKeranjang();
+    }
+
+    /**
+     * Mengubah jumlah item di keranjang (+1 atau -1)
+     */
+    function ubahJumlahItem(idBuku, delta) {
+      const indeks = keranjang.findIndex((item) => item.id === idBuku);
+      if (indeks === -1) return;
+
+      keranjang[indeks].jumlah += delta;
+      if (keranjang[indeks].jumlah <= 0) {
+        keranjang.splice(indeks, 1);
+      }
+      updateKeranjangUI();
+    }
+
+    /**
+     * Menghapus item tertentu dari keranjang
+     */
+    function hapusItemKeranjang(idBuku) {
+      keranjang = keranjang.filter((item) => item.id !== idBuku);
+      updateKeranjangUI();
+      tampilkanNotifikasi('Item dihapus dari keranjang.');
+    }
+
+    /**
+     * Menerapkan kode promo HEMAT20
+     */
+    function terapkanKodePromo() {
+      const input = document.getElementById('input-kode-promo');
+      const pesan = document.getElementById('pesan-promo');
+      const kode = input.value.trim().toUpperCase();
+
+      if (!kode) {
+        kodePromoAktif = null;
+        pesan.textContent = 'Masukkan kode promo terlebih dahulu.';
+        pesan.className = 'text-xs mt-1.5 text-tintaLembut';
+        updateRingkasanHarga();
+        return;
+      }
+
+      if (kode === 'HEMAT20') {
+        kodePromoAktif = 'HEMAT20';
+        pesan.textContent = 'Kode HEMAT20 aktif! Diskon 20% diterapkan ke subtotal.';
+        pesan.className = 'text-xs mt-1.5 text-pinus font-semibold';
+      } else {
+        kodePromoAktif = null;
+        pesan.textContent = `Kode "${kode}" tidak valid. Coba gunakan HEMAT20.`;
+        pesan.className = 'text-xs mt-1.5 text-terakota font-medium';
+      }
+
+      updateRingkasanHarga();
+    }
+
+    /**
+     * Menghitung subtotal, diskon, dan total pembayaran secara otomatis
+     */
+    function hitungRincianBiaya() {
+      let subtotal = 0;
+      let totalItem = 0;
+
+      keranjang.forEach((entry) => {
+        const buku = KATALOG_EBOOK.find((b) => b.id === entry.id);
+        if (buku) {
+          subtotal += buku.harga * entry.jumlah;
+          totalItem += entry.jumlah;
+        }
+      });
+
+      const diskon = kodePromoAktif === 'HEMAT20' ? Math.round(subtotal * DISKON_PERSEN) : 0;
+      const total = Math.max(0, subtotal - diskon);
+
+      return { subtotal, diskon, total, totalItem };
+    }
+
+    /**
+     * Memperbarui angka pada ringkasan harga keranjang
+     */
+    function updateRingkasanHarga() {
+      const { subtotal, diskon, total, totalItem } = hitungRincianBiaya();
+
+      document.getElementById('ringkasan-subtotal').textContent = formatRupiah(subtotal);
+      const barisDiskon = document.getElementById('baris-diskon');
+      if (diskon > 0) {
+        barisDiskon.classList.remove('hidden');
+        barisDiskon.classList.add('flex');
+        document.getElementById('ringkasan-diskon').textContent = `-${formatRupiah(diskon)}`;
+      } else {
+        barisDiskon.classList.add('hidden');
+        barisDiskon.classList.remove('flex');
+      }
+
+      document.getElementById('ringkasan-total').textContent = formatRupiah(total);
+      document.getElementById('btn-checkout').disabled = totalItem === 0;
+    }
+
+    /**
+     * Memperbarui badge navbar, daftar item di drawer, dan ringkasan harga
+     */
+    function updateKeranjangUI() {
+      const { totalItem } = hitungRincianBiaya();
+      document.getElementById('badge-jumlah-keranjang').textContent = totalItem;
+      document.getElementById('subjudul-keranjang').textContent =
+        totalItem === 0 ? 'Belum ada e-book dipilih' : `${totalItem} e-book dalam keranjang`;
+
+      const wadahItem = document.getElementById('daftar-item-keranjang');
+
+      if (keranjang.length === 0) {
+        wadahItem.innerHTML = `
+          <div class="text-center py-14 px-4">
+            <div class="w-12 h-12 rounded-2xl bg-kertasGelap text-tintaLembut flex items-center justify-center mx-auto mb-3 text-lg">
+              📚
+            </div>
+            <h3 class="font-serif text-lg font-bold text-tinta mb-1">Keranjang masih kosong</h3>
+            <p class="text-xs text-tintaLembut">Pilih e-book atau paket bundling favorit Anda untuk mulai membaca.</p>
+          </div>
+        `;
+        updateRingkasanHarga();
+        return;
+      }
+
+      wadahItem.innerHTML = keranjang
+        .map((entry) => {
+          const buku = KATALOG_EBOOK.find((b) => b.id === entry.id);
+          if (!buku) return '';
+          const totalBaris = buku.harga * entry.jumlah;
+
+          return `
+            <div class="bg-white rounded-2xl p-4 border border-garis flex flex-col gap-3 shadow-2xs">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-11 h-14 rounded-xl shrink-0 flex items-center justify-center text-white text-xs font-bold"
+                    style="background: linear-gradient(145deg, ${buku.tema.dari}, ${buku.tema.ke});"
+                  >
+                    PDF
+                  </div>
+                  <div>
+                    <h4 class="font-serif text-sm font-bold text-tinta leading-snug line-clamp-2">
+                      ${buku.judul}
+                    </h4>
+                    <p class="text-xs text-tintaLembut mt-0.5">${formatRupiah(buku.harga)} / buku</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onclick="hapusItemKeranjang('${buku.id}')"
+                  class="text-xs text-tintaLembut hover:text-terakota font-semibold px-1.5 py-0.5 cursor-pointer"
+                  aria-label="Hapus ${buku.judul}"
+                >
+                  Hapus
+                </button>
+              </div>
+
+              <div class="flex items-center justify-between pt-2.5 border-t border-garis/70">
+                <div class="inline-flex items-center rounded-xl border border-garis bg-kertas">
+                  <button
+                    type="button"
+                    onclick="ubahJumlahItem('${buku.id}', -1)"
+                    class="w-8 h-8 flex items-center justify-center font-bold text-tinta hover:bg-kertasGelap rounded-l-xl cursor-pointer"
+                    aria-label="Kurangi jumlah"
+                  >
+                    −
+                  </button>
+                  <span class="px-3 text-xs font-bold text-tinta">${entry.jumlah}</span>
+                  <button
+                    type="button"
+                    onclick="ubahJumlahItem('${buku.id}', 1)"
+                    class="w-8 h-8 flex items-center justify-center font-bold text-tinta hover:bg-kertasGelap rounded-r-xl cursor-pointer"
+                    aria-label="Tambah jumlah"
+                  >
+                    +
+                  </button>
+                </div>
+
+                <span class="text-sm font-bold text-tinta">${formatRupiah(totalBaris)}</span>
+              </div>
+            </div>
+          `;
+        })
+        .join('');
+
+      updateRingkasanHarga();
+    }
+
+    /**
+     * Membuka drawer keranjang belanja
+     */
+    function bukaKeranjang() {
+      const overlay = document.getElementById('overlay-keranjang');
+      const drawer = document.getElementById('drawer-keranjang');
+      overlay.classList.remove('hidden');
+      drawer.classList.remove('translate-x-full');
+    }
+
+    /**
+     * Menutup drawer keranjang belanja
+     */
+    function tutupKeranjang() {
+      const overlay = document.getElementById('overlay-keranjang');
+      const drawer = document.getElementById('drawer-keranjang');
+      overlay.classList.add('hidden');
+      drawer.classList.add('translate-x-full');
+    }
+
+    /**
+     * Membuka modal checkout simulasi instan
+     */
+    function bukaFormCheckout() {
+      const { total, totalItem } = hitungRincianBiaya();
+      if (totalItem === 0) return;
+
+      tutupKeranjang();
+      document.getElementById('checkout-jumlah-item').textContent = `${totalItem} buku`;
+      document.getElementById('checkout-total-bayar').textContent = formatRupiah(total);
+
+      document.getElementById('form-checkout-container').classList.remove('hidden');
+      document.getElementById('konfirmasi-pesanan-container').classList.add('hidden');
+
+      const modal = document.getElementById('modal-checkout');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    /**
+     * Menutup modal checkout
+     */
+    function tutupModalCheckout() {
+      const modal = document.getElementById('modal-checkout');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    /**
+     * Memproses konfirmasi pesanan simulasi dan menampilkan ringkasan e-book siap akses
+     */
+    function prosesKonfirmasiPesanan(event) {
+      event.preventDefault();
+
+      const nama = document.getElementById('nama-pembeli').value.trim();
+      const email = document.getElementById('email-pembeli').value.trim();
+      const kodePesanan = 'LP-' + Math.floor(100000 + Math.random() * 900000);
+
+      const daftarUnduhan = document.getElementById('daftar-unduhan-ebook');
+      daftarUnduhan.innerHTML = keranjang
+        .map((entry) => {
+          const buku = KATALOG_EBOOK.find((b) => b.id === entry.id);
+          if (!buku) return '';
+          return `
+            <div class="flex items-center justify-between gap-2 py-2 border-b last:border-b-0 border-garis/70">
+              <div>
+                <p class="text-xs font-bold text-tinta">${buku.judul} <span class="text-tintaLembut font-normal">(${entry.jumlah}x)</span></p>
+                <p class="text-[11px] text-pinus font-medium">Siap diunduh: ${buku.format}</p>
+              </div>
+              <button
+                type="button"
+                onclick="tampilkanNotifikasi('Berkas ${buku.judul} (${buku.format}) disiapkan untuk diunduh.')"
+                class="px-3 py-1.5 rounded-lg bg-pinusTerang text-pinus hover:bg-pinus hover:text-white text-[11px] font-bold transition-colors shrink-0 cursor-pointer"
+              >
+                Unduh
+              </button>
+            </div>
+          `;
+        })
+        .join('');
+
+      document.getElementById('konfirmasi-nama').textContent = nama;
+      document.getElementById('konfirmasi-kode').textContent = kodePesanan;
+      document.getElementById('konfirmasi-email').textContent = email;
+
+      document.getElementById('form-checkout-container').classList.add('hidden');
+      document.getElementById('konfirmasi-pesanan-container').classList.remove('hidden');
+
+      // Kosongkan keranjang & reset promo setelah pesanan dikonfirmasi
+      keranjang = [];
+      kodePromoAktif = null;
+      document.getElementById('input-kode-promo').value = '';
+      document.getElementById('pesan-promo').textContent = '';
+      updateKeranjangUI();
+    }
+
+    /**
+     * Mengatur buka/tutup akordeon FAQ
+     */
+    function toggleFaq(indeks) {
+      const panel = document.getElementById(`faq-panel-${indeks}`);
+      const ikon = document.getElementById(`faq-icon-${indeks}`);
+      const tombol = document.getElementById(`faq-btn-${indeks}`);
+      const sedangTerbuka = !panel.classList.contains('hidden');
+
+      if (sedangTerbuka) {
+        panel.classList.add('hidden');
+        ikon.textContent = '+';
+        tombol.setAttribute('aria-expanded', 'false');
+      } else {
+        panel.classList.remove('hidden');
+        ikon.textContent = '−';
+        tombol.setAttribute('aria-expanded', 'true');
+      }
+    }
+
+    /**
+     * Menyalin kode promo HEMAT20 ke clipboard dengan fallback aman
+     */
+    function salinKodePromo() {
+      const kode = 'HEMAT20';
+      const tempInput = document.createElement('input');
+      tempInput.value = kode;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      try {
+        document.execCommand('copy');
+        tampilkanNotifikasi('Kode promo HEMAT20 berhasil disalin!');
+      } catch (err) {
+        tampilkanNotifikasi('Gunakan kode promo HEMAT20 saat checkout.');
+      }
+      document.body.removeChild(tempInput);
+    }
+
+    /**
+     * Menampilkan pesan notifikasi singkat di bagian bawah layar
+     */
+    let timerToast = null;
+    function tampilkanNotifikasi(pesan) {
+      const toast = document.getElementById('toast-notifikasi');
+      const teks = document.getElementById('toast-pesan');
+      teks.textContent = pesan;
+
+      toast.classList.remove('opacity-0', 'translate-y-3');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      clearTimeout(timerToast);
+      timerToast = setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-3');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+      }, 2800);
+    }
+
+    // Inisialisasi saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('tahun-sekarang').textContent = new Date().getFullYear();
+      renderKategori();
+      renderKatalog();
+      updateKeranjangUI();
+
+      // Tutup modal saat menekan tombol Escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          tutupSinopsis();
+          tutupKeranjang();
+          tutupModalCheckout();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
